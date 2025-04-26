@@ -4,6 +4,7 @@ import { registerUser, loginUser } from "../auth/auth";
 import { getLocation, createLocation } from "../logic/location"
 import { getSportType } from "../logic/sport_type"
 import { getActivity, createActivity } from "../logic/activity"
+import { getStretch } from "../logic/stretch"
 
 
 const router = express.Router();
@@ -27,6 +28,9 @@ router.post("/sport_type.get", getSportType);
 router.post("/activity.get", getActivity)
 router.post("/create_activity.post", createActivity)
 
+
+// Stretch
+router.post("/stretch.get", getStretch)
 
 
 export default router;
