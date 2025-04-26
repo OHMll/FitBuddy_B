@@ -15,6 +15,7 @@ import {
     getMyActivity,
 } from "../logic/activity"
 import { getChatSystem } from "../logic/chat";
+import { getStretch } from "../logic/stretch"
 
 
 const router = express.Router();
@@ -47,5 +48,8 @@ router.post("/activity.my.get", getMyActivity)
 
 // Chat System
 router.post("/chat.get", getChatSystem)
+
+// Stretch
+router.post("/stretch.get", getStretch)
 
 export default router;
