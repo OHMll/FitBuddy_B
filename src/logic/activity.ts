@@ -19,22 +19,9 @@ export const getActivity = async (req: Request, res: Response) => {
         sport_type_name,
     } = req.body
 
-    if (
-        !activity_id &&
-        !title &&
-        !create_at &&
-        !start_time &&
-        !end_time &&
-        !create_by &&
-        !location_id &&
-        !location_name &&
-        !sport_type_id &&
-        !sport_type_name
-    ) {
-        throw new Error("No value input!");
-    }
-
     let query = ``;
+
+    console.log("activity_id", activity_id)
 
     query += 'SELECT * FROM activity a \n'
     query += 'LEFT JOIN location l ON l.location_id = a.location_id \n'
@@ -79,13 +66,13 @@ export const getActivity = async (req: Request, res: Response) => {
     try {
         const data = await queryPostgresDB(query, globalSmartGISConfig);
         res.status(200).json({ success: true, data });
+
+        console.log(data)
     } catch (error) {
         console.error('Error fetching data:', error);
         res.status(500).json({ success: false, message: 'Error fetching data' });
     }
 };
-
-
 
 export const createActivity = async (req: Request, res: Response) => {
 
@@ -96,7 +83,7 @@ export const createActivity = async (req: Request, res: Response) => {
         start_time,
         end_time,
         create_by,
-        activity_detail,
+        style,
         location_id,
         sport_type_id,
     } = req.body
@@ -108,14 +95,14 @@ export const createActivity = async (req: Request, res: Response) => {
         !end_time &&
         !create_by &&
         !location_id &&
-        !activity_detail &&
+        !style &&
         !sport_type_id &&
         !description
     ) {
         throw new Error("No value input!");
     }
 
-    if (!title || !create_by || !start_time || !end_time || !activity_detail || !location_id || !sport_type_id) {
+    if (!title || !create_by || !start_time || !end_time || !style || !location_id || !sport_type_id) {
         // throw new Error("No value input require feild!");
         // return res.status(400).json({
         //     success: false,
@@ -134,7 +121,7 @@ export const createActivity = async (req: Request, res: Response) => {
     query += `
     INSERT INTO activity (
         create_by, sport_type_id, location_id, description, start_time, end_time, 
-        create_at, activity_detail, title
+        create_at, title, style
     ) VALUES (
         ${create_by},
         ${sport_type_id},
@@ -143,8 +130,8 @@ export const createActivity = async (req: Request, res: Response) => {
         '${start_time}',
         '${end_time}',
         '${finalCreateDate}', 
-        '${activity_detail}'::jsonb,
-        '${title}'
+        '${title}',
+        '${style}'
     )
     RETURNING *;
     `;
