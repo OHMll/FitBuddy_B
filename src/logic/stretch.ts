@@ -10,6 +10,7 @@ export const getStretch = async (req: Request, res: Response) => {
         sport_type_name,
 
         flag_valid,
+        image,
     } = req.body
 
     // console.log(req.body)
@@ -31,6 +32,9 @@ export const getStretch = async (req: Request, res: Response) => {
     }
     if (flag_valid) {
         query += `AND s.flag_valid = ${flag_valid}  \n`
+    }
+    if (image) {
+        query += `AND s.image = ${image}  \n`
     };
 
     console.log(query)
