@@ -3,7 +3,15 @@ import { registerUser, loginUser } from "../auth/auth";
 
 import { getLocation, createLocation } from "../logic/location"
 import { getSportType } from "../logic/sport_type"
-import { getActivity, createActivity } from "../logic/activity"
+import { 
+    getActivity, 
+    createActivity, 
+    joinActivity, 
+    startActivity,
+    stopActivity,
+    deleteActivityParticipant,
+    getMyActivity
+} from "../logic/activity"
 
 
 const router = express.Router();
@@ -26,6 +34,11 @@ router.post("/sport_type.get", getSportType);
 // Activity
 router.post("/activity.get", getActivity)
 router.post("/create_activity.post", createActivity)
+router.post("/activity.join", joinActivity)
+router.post("/activity.start", startActivity)
+router.post("/activity.stop", stopActivity)
+router.post("/activity.cancel", deleteActivityParticipant)
+router.post("/activity.my.get", getMyActivity)
 
 
 
