@@ -11,6 +11,13 @@ const hashPasswordWithSalt = async (plainPassword: string) => {
   return hashed
 };
 
+export const verifyPasswordWithSalt = async (plainPassword: string, hashedPassword: string) => {
+  const saltNumber = process.env.SALTNUMBER;
+  const combined = plainPassword + saltNumber;
+  const isMatch = await bcrypt.compare(combined, hashedPassword);
+  return isMatch;
+};
+
 // const users: { id: number; username: string; password: string }[] = [];
 
 function generateDefaultAvatar(letter: any) {
@@ -65,7 +72,65 @@ export const registerUser = async (req: Request, res: Response) => {
 
 
 
-export const loginUser = async (req: Request, res: Response) => {
-  const { username, password } = req.body;
-};
+// export const loginUser = async (req: Request, res: Response) => {
+//   const { username, password } = req.body;
+// };
 
+export const loginUser = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+    const JWT_SECRET: any = process.env.JWT_SECRET
+
+    // 1. Find user by username or email
+    const userQuery = 
+      `SELECT u.* 
+      FROM user_sys u
+      WHERE u.email = '${email}'
+      LIMIT 1`
+    ;
+
+    const usersData = await queryPostgresDB(userQuery, globalSmartGISConfig);
+
+    if (usersData.length === 0) {
+      res.status(401).json({ success: false, message: "User not found" });
+      return
+    }
+
+    const user = usersData[0];
+
+    // 2. Verify password with salt
+    const isMatch = await verifyPasswordWithSalt(password, user.password)
+    console.log("Status: ", ! isMatch)
+
+    if (!isMatch) {
+      res.status(401).json({ success: false, message: "Incorrect password" });
+      return
+    }
+
+    // 3. Exclude password from user object
+    const { password: _, ...userData } = user;
+    console.log("User Data: ",userData);
+
+    // 4. Generate JWT token
+    const token = jwt.sign(
+      {
+        ...userData, // ใช้ทั้งหมด ยกเว้น password
+      },
+      JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    console.log("Token: ", token);
+
+    // 5. Return token and user data
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      token,
+      user: userData.email,
+    });
+
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
