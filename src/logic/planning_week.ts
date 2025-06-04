@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { queryPostgresDB, globalSmartGISConfig } from '../config/db';
 import { error } from 'console';
 
-export const getPlanningWeek= async (req: Request, res: Response) => {
+export const getPlanningWeek = async (req: Request, res: Response) => {
 
     const {
         planning_week_id,
@@ -10,21 +10,23 @@ export const getPlanningWeek= async (req: Request, res: Response) => {
         end_date,
         exercise_count,
         exercise_duration,
+        currentWorkouts,
+        currentMinutes,
     } = req.body
 
     let query = ``;
 
     query += 'SELECT * FROM planning_week pk  \n'
-    query += 'WHERE pk.planning_week_id > 0  \n'
+    query += 'WHERE 1 = 1  \n'
 
-     if (planning_week_id) {
+    if (planning_week_id) {
         query += `AND pk.planning_week_id = ${planning_week_id}  \n`
     }
     if (start_date) {
-        query += `AND pk.start_date = ${start_date}  \n`
+        query += `AND pk.start_date = '${start_date}'  \n`
     }
     if (end_date) {
-        query += `AND pk.end_date = ${end_date}  \n`
+        query += `AND pk.end_date = '${end_date}'  \n`
     };
     if (exercise_count) {
         query += `AND pk.exercise_count = ${exercise_count}  \n`
@@ -32,15 +34,23 @@ export const getPlanningWeek= async (req: Request, res: Response) => {
     if (exercise_duration) {
         query += `AND pk.exercise_duration = ${exercise_duration}  \n`
     };
+    if (currentWorkouts) {
+        query += `AND pk.current_workouts = ${currentWorkouts}  \n`
+    };
+    if (currentMinutes) {
+        query += `AND pk.current_minutes = ${currentMinutes}  \n`
+    };
 
-    console.log(query)
+
+    // console.log("getPlanningWeek", query);
 
 
     try {
         const data = await queryPostgresDB(query, globalSmartGISConfig);
         res.status(200).json({ success: true, data });
 
-        console.log(data)
+        console.log("getPlanningWeek", query);
+        // console.log(data)
     } catch (error) {
         console.error('Error fetching data:', error);
         res.status(500).json({ success: false, message: 'Error fetching data' });
@@ -54,13 +64,17 @@ export const createPlanningWeek = async (req: Request, res: Response) => {
         end_date,
         exercise_count,
         exercise_duration,
+        currentWorkouts,
+        currentMinutes,
     } = req.body
 
     if (
         !start_date &&
         !end_date &&
         !exercise_count &&
-        !exercise_duration
+        !exercise_duration &&
+        !currentWorkouts &&
+        !currentMinutes
     ) {
         throw new Error("No value input!");
     }
@@ -71,12 +85,14 @@ export const createPlanningWeek = async (req: Request, res: Response) => {
 
     query += `
     INSERT INTO planning_week (
-        start_date, end_date, exercise_count, exercise_duration
+    start_date, end_date, exercise_count, exercise_duration, current_workouts, current_minutes
     ) VALUES (
-        '${start_date}',
-        '${end_date}',
-        ${exercise_count},
-        ${exercise_duration}
+    '${start_date}',
+    '${end_date}',
+    ${exercise_count},
+    ${exercise_duration},
+    ${currentWorkouts},
+    ${currentMinutes}
     )
     RETURNING *;
     `;
@@ -92,3 +108,28 @@ export const createPlanningWeek = async (req: Request, res: Response) => {
         res.status(500).json({ success: false, message: 'Error fetching data' });
     }
 };
+
+export const updateCurrentProgress = async (req: Request, res: Response) => {
+    const { planning_week_id, currentWorkouts, currentMinutes } = req.body
+
+    if (!planning_week_id) {
+        res.status(400).json({ success: false, message: "Missing planning_week_id" })
+        return
+    }
+    
+    const query = `
+    UPDATE planning_week
+    SET current_workouts = ${currentWorkouts}, current_minutes = ${currentMinutes}
+    WHERE planning_week_id = '${planning_week_id}'
+    RETURNING *;
+  `
+    console.log(query)
+    try {
+        const data = await queryPostgresDB(query, globalSmartGISConfig)
+        res.status(200).json({ success: true, data })
+        console.log("UpdateData: ", data);
+    } catch (error) {
+        console.error('Error updating current progress:', error)
+        res.status(500).json({ success: false, message: 'Error updating data' })
+    }
+}

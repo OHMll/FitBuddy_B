@@ -16,6 +16,8 @@ import {
 } from "../logic/activity"
 import { getChatSystem } from "../logic/chat";
 import { getStretch } from "../logic/stretch"
+import { createPlanningDay, getPlanningDay, deletePlanningDay, updateWorkoutStatus } from "../logic/planning_day"
+import {createPlanningWeek, getPlanningWeek, updateCurrentProgress} from "../logic/planning_week"
 
 
 const router = express.Router();
@@ -52,4 +54,14 @@ router.post("/chat.get", getChatSystem)
 // Stretch
 router.post("/stretch.get", getStretch)
 
+//Planningday
+router.post("/planningday.create", createPlanningDay);
+router.post("/planningday.get", getPlanningDay);
+router.post("/planningday.delete", deletePlanningDay);
+router.post("/planningday.updateStatus", updateWorkoutStatus);
+
+//Planningweek
+router.post("/planningweek.create", createPlanningWeek);
+router.post("/planningweek.get", getPlanningWeek);
+router.post("/planningweek.updateProgress", updateCurrentProgress);
 export default router;
