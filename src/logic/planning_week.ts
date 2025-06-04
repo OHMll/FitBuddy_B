@@ -12,6 +12,7 @@ export const getPlanningWeek = async (req: Request, res: Response) => {
         exercise_duration,
         currentWorkouts,
         currentMinutes,
+        user_sys_id,
     } = req.body
 
     let query = ``;
@@ -40,10 +41,9 @@ export const getPlanningWeek = async (req: Request, res: Response) => {
     if (currentMinutes) {
         query += `AND pk.current_minutes = ${currentMinutes}  \n`
     };
-
-
-    // console.log("getPlanningWeek", query);
-
+    if (user_sys_id) {
+        query += `AND pk.user_sys_id = ${user_sys_id}  \n`
+    };
 
     try {
         const data = await queryPostgresDB(query, globalSmartGISConfig);
@@ -66,6 +66,7 @@ export const createPlanningWeek = async (req: Request, res: Response) => {
         exercise_duration,
         currentWorkouts,
         currentMinutes,
+        user_sys_id,
     } = req.body
 
     if (
@@ -74,7 +75,8 @@ export const createPlanningWeek = async (req: Request, res: Response) => {
         !exercise_count &&
         !exercise_duration &&
         !currentWorkouts &&
-        !currentMinutes
+        !currentMinutes &&
+        !user_sys_id
     ) {
         throw new Error("No value input!");
     }
@@ -85,14 +87,15 @@ export const createPlanningWeek = async (req: Request, res: Response) => {
 
     query += `
     INSERT INTO planning_week (
-    start_date, end_date, exercise_count, exercise_duration, current_workouts, current_minutes
+    start_date, end_date, exercise_count, exercise_duration, current_workouts, current_minutes, user_sys_id
     ) VALUES (
     '${start_date}',
     '${end_date}',
     ${exercise_count},
     ${exercise_duration},
     ${currentWorkouts},
-    ${currentMinutes}
+    ${currentMinutes},
+    ${user_sys_id}
     )
     RETURNING *;
     `;
@@ -110,7 +113,7 @@ export const createPlanningWeek = async (req: Request, res: Response) => {
 };
 
 export const updateCurrentProgress = async (req: Request, res: Response) => {
-    const { planning_week_id, currentWorkouts, currentMinutes } = req.body
+    const { planning_week_id, currentWorkouts, currentMinutes, user_sys_id } = req.body
 
     if (!planning_week_id) {
         res.status(400).json({ success: false, message: "Missing planning_week_id" })
@@ -120,7 +123,8 @@ export const updateCurrentProgress = async (req: Request, res: Response) => {
     const query = `
     UPDATE planning_week
     SET current_workouts = ${currentWorkouts}, current_minutes = ${currentMinutes}
-    WHERE planning_week_id = '${planning_week_id}'
+    WHERE planning_week_id = '${planning_week_id}' AND
+    user_sys_id = ${user_sys_id}
     RETURNING *;
   `
     console.log(query)
