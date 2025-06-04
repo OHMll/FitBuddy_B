@@ -25,6 +25,8 @@ export const getActivity = async (req: Request, res: Response) => {
 
     console.log("activity_id", activity_id)
 
+    console.log("activity_id", activity_id)
+
     query += 'SELECT * FROM activity a \n'
     query += 'LEFT JOIN location l ON l.location_id = a.location_id \n'
     query += 'LEFT JOIN sport_type sp ON sp.sport_type_id = a.sport_type_id \n'
