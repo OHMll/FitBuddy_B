@@ -97,10 +97,11 @@ export const loginUser = async (req: Request, res: Response) => {
     }
 
     const user = usersData[0];
+    console.log("user", user)
 
     // 2. Verify password with salt
     const isMatch = await verifyPasswordWithSalt(password, user.password)
-    console.log("Status: ", ! isMatch)
+    console.log("Status: ", isMatch)
 
     if (!isMatch) {
       res.status(401).json({ success: false, message: "Incorrect password" });
