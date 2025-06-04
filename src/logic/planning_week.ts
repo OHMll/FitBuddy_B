@@ -100,7 +100,7 @@ export const createPlanningWeek = async (req: Request, res: Response) => {
     RETURNING *;
     `;
 
-    console.log(query)
+    console.log("createPlanningWeek",query);
 
 
     try {
@@ -127,7 +127,7 @@ export const updateCurrentProgress = async (req: Request, res: Response) => {
     user_sys_id = ${user_sys_id}
     RETURNING *;
   `
-    console.log(query)
+    console.log("updateCurrentProgress", query)
     try {
         const data = await queryPostgresDB(query, globalSmartGISConfig)
         res.status(200).json({ success: true, data })
