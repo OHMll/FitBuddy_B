@@ -16,8 +16,21 @@ import {
 } from "../logic/activity"
 import { getChatSystem } from "../logic/chat";
 import { getStretch } from "../logic/stretch"
-import { createPlanningDay, getPlanningDay, deletePlanningDay, updateWorkoutStatus } from "../logic/planning_day"
-import {createPlanningWeek, getPlanningWeek, updateCurrentProgress} from "../logic/planning_week"
+import { 
+    createPlanningDay,
+    getPlanningDay, 
+    deletePlanningDay, 
+    updateWorkoutStatus 
+} from "../logic/planning_day"
+import {
+    createPlanningWeek, 
+    getPlanningWeek, 
+    updateCurrentProgress
+} from "../logic/planning_week"
+import {
+    getUser,
+    updateUser
+} from "../logic/user"
 
 
 const router = express.Router();
@@ -26,7 +39,8 @@ router.post("/register", registerUser);
 router.post("/login", loginUser);
 
 // User Sys
-// router.post("/users.get", getUser);
+router.post("/user.get", getUser);
+router.post("/user.update", updateUser)
 
 // Location
 router.post("/location.get", getLocation);
