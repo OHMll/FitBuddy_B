@@ -6,6 +6,7 @@ import cors from "cors";
 import routes from "./routes/routes"
 // import { initWebSocket } from "./ws";
 import { setupWebSocket } from './ws/socket';
+import { scheduleEmailNotification } from './noti/notification';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json()); 
 
+scheduleEmailNotification();
 
 app.use("/api", routes);
 
