@@ -466,8 +466,12 @@ export const getMyActivity = async (req: Request, res: Response) => {
     query += 'SELECT * FROM activity a \n'
     query += 'LEFT JOIN location l ON l.location_id = a.location_id \n'
     query += 'LEFT JOIN sport_type sp ON sp.sport_type_id = a.sport_type_id \n'
-    query += 'LEFT JOIN user_sys us ON us.user_sys_id = a.create_by \n'
     query += 'LEFT JOIN activity_participant ap ON ap.activity_id = a.activity_id \n'
+    if (form === 'call_user') {
+        query += 'LEFT JOIN user_sys us ON us.user_sys_id = ap.user_sys_id \n'
+    } else {
+        query += 'LEFT JOIN user_sys us ON us.user_sys_id = a.create_by \n'
+    }
     query += 'WHERE a.activity_id > 0 \n'
 
     if (activity_id) {
