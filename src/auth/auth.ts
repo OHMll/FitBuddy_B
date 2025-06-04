@@ -118,7 +118,7 @@ export const loginUser = async (req: Request, res: Response) => {
         ...userData, // ใช้ทั้งหมด ยกเว้น password
       },
       JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "1d" }
     );
 
     console.log("Token: ", token);
