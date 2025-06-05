@@ -10,11 +10,16 @@ const checkQuery = async () => {
     query += 'LEFT JOIN user_sys us ON us.user_sys_id = ap.user_sys_id \n';
     query += 'WHERE a.activity_id > 0 \n';
 
-    query += `AND a.start_time BETWEEN NOW() AND NOW() + INTERVAL '16 minutes' \n`;
+    // query += `AND a.start_time BETWEEN NOW() AND NOW() + INTERVAL '16 minutes' \n`;
     query += `AND ap.send_email = false \n`;
+
+    console.log("query", query)
 
     try {
         const data = await queryPostgresDB(query, globalSmartGISConfig);
+
+        if (data) return data
+        else return []
 
         return data;
     } catch (error) {
@@ -42,12 +47,13 @@ const updateSendEmail = async (user_sys_id: any, activity_id: any) => {
 }
 
 export const scheduleEmailNotification = () => {
-    cron.schedule('*/16 * * * *', async () => {
+    cron.schedule('*/10  * * * *', async () => {
         console.log('⏰ Checking users to notify...');
 
         try {
 
             const apdata: any = await checkQuery();
+            console.log(apdata, "apdata")
 
             for (const user of apdata) {
                 const userData = await sendEmail(user.email);

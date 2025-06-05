@@ -66,11 +66,11 @@ export const getActivity = async (req: Request, res: Response) => {
     }
 
     if (typeof flag_valid === "boolean") {
-        query += `AND a.flag_valid = ${flag_valid}`
+        query += `AND a.flag_valid = ${flag_valid} \n`
     }
 
-    if (form === 'home'){
-        query += `AND a.end_time >= CURDATE() \n`;
+    if (form === 'home') {
+        query += `AND a.end_time >= CURRENT_DATE \n`;
     }
 
     console.log(query)
@@ -297,7 +297,13 @@ export const joinActivity = async (req: Request, res: Response) => {
     }
 
 
-    const finalCreateDate = new Date().toISOString(); // 'YYYY-MM-DD'
+    const date = new Date();
+
+    // สร้าง string ในรูปแบบ YYYY-MM-DD HH:mm:ss จาก local time (สมมติเครื่องตั้งเวลาไทยไว้แล้ว)
+    const pad = (n : any) => n.toString().padStart(2, '0');
+
+    const finalCreateDate = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
+        `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 
     let query = ``;
 
