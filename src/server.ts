@@ -7,6 +7,7 @@ import routes from "./routes/routes"
 // import { initWebSocket } from "./ws";
 import { setupWebSocket } from './ws/socket';
 import { scheduleEmailNotification } from './noti/notification';
+import { scheduleCheckActivityData } from "./noti/checkActivity";
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use(bodyParser.json());
 app.use(express.json()); 
 
 scheduleEmailNotification();
+scheduleCheckActivityData()
 
 app.use("/api", routes);
 

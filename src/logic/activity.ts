@@ -19,11 +19,11 @@ export const getActivity = async (req: Request, res: Response) => {
         sport_type_name,
 
         flag_valid,
+
+        form,
     } = req.body
 
     let query = ``;
-
-    console.log("activity_id", activity_id)
 
     console.log("activity_id", activity_id)
 
@@ -67,6 +67,10 @@ export const getActivity = async (req: Request, res: Response) => {
 
     if (typeof flag_valid === "boolean") {
         query += `AND a.flag_valid = ${flag_valid}`
+    }
+
+    if (form === 'home'){
+        query += `AND a.end_time >= CURDATE() \n`;
     }
 
     console.log(query)
